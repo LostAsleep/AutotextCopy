@@ -1,0 +1,4 @@
+R93.8|||Abnorme Befunde bei der bildgebenden Diagnostik an sonstigen näher bezeichneten Körperstrukturen
+R93.7|||Abnorme Befunde bei der bildgebenden Diagnostik sonstiger Abschnitte des Muskel-Skelett-Systems
+Z96.64|||Vorhandensein einer Hüftgelenkprothese
+Z96.65|||Vorhandensein einer Kniegelenkprothese
