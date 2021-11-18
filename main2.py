@@ -54,6 +54,19 @@ def main():
     """The main function."""
     root = tk.Tk()
     root.title("Autotext Copy")
+    root.configure(height=100, width=490)
+    root.maxsize(height=100)
+    root.pack_propagate(0)
+
+    canvas = tk.Canvas(root)
+    canvas.pack()
+
+    main_frame = tk.Canvas(canvas)
+    main_frame.pack(side="left", fill="both")
+
+    myscrollbar = tk.Scrollbar(canvas, orient=tk.VERTICAL, command=canvas.yview)
+    canvas.configure(yscrollcommand=myscrollbar.set)
+    myscrollbar.pack(side="right")
 
     button_data = get_button_data()
     if button_data is None:
@@ -66,7 +79,7 @@ def main():
         for i in range(len(button_data)):
             b_text = button_data[i][0]
             icd_10 = button_data[i][1]
-            all_buttons.append(CopyButton(root, text=b_text, icd_nr=icd_10))
+            all_buttons.append(CopyButton(main_frame, text=b_text, icd_nr=icd_10))
 
         for button in all_buttons:
             button.pack()
