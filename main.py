@@ -41,7 +41,7 @@ class CopyButton(tk.Button):
         super().__init__(
             master=master,
             text=text,
-            #wraplength=470,
+            # wraplength=470,
             font=FONT,
             width=70,
             height=1,
@@ -52,7 +52,7 @@ class CopyButton(tk.Button):
         pyperclip.copy(self.icd_nr)
 
 
-class SearchFunctionality():
+class SearchFunctionality:
     """Internet and MyHelios search buttons and link to my radio notes file."""
 
     def __init__(self, master, col, row):
@@ -76,7 +76,13 @@ class SearchFunctionality():
         for key, value in self.search_providers.items():
             # Needs partial because otherwise the function args
             # will not be correctly updated during iteration.
-            button = tk.Button(master=master, text=key, width=self.width, font=FONT, command=partial(self.search_net, base_url=value))
+            button = tk.Button(
+                master=master,
+                text=key,
+                width=self.width,
+                font=FONT,
+                command=partial(self.search_net, base_url=value),
+            )
             button.grid(column=col, row=self.current_row)
             self.current_row += 1
 
@@ -92,12 +98,11 @@ class SearchFunctionality():
             command=partial(
                 webbrowser.open,
                 url="file:///G:/Radiologie/Radiologie-gesamt/09.%20Bilddaten-Ordner/Dissmann/08_notes/radiology-export.html",
-                new=0
-            )
+                new=0,
+            ),
         )
         self.notes_button.grid(column=col, row=self.current_row)
         self.current_row += 1
-
 
     def assemble_search_string(self, url):
         search_input = self.entry.get()
