@@ -1,6 +1,10 @@
 import tkinter as tk
 from tkinter import messagebox
 import pyperclip
+import webbrowser
+
+
+FONT = ("Sans Serif", 11)
 
 
 def get_button_data(fname="buttons.txt"):
@@ -15,8 +19,8 @@ def get_button_data(fname="buttons.txt"):
 
                 button_label = line[0]
                 button_label = button_label.strip()
-                if len(button_label) > 100:
-                    button_label = f"{button_label[:-3]}..."
+                if len(button_label) >= 80:
+                    button_label = f"{button_label[:77]}..."
 
                 to_clipboard = line[1]
                 to_clipboard = to_clipboard.strip()
@@ -33,21 +37,55 @@ class CopyButton(tk.Button):
 
     def __init__(self, master, text, icd_nr):
         self.icd_nr = icd_nr
-
         super().__init__(
             master=master,
             text=text,
-            width=60,
-            height=2,
-            font=("Arial", 12),
-            wraplength=500,
-            padx=12,
-            pady=2,
+            #wraplength=470,
+            font=FONT,
+            width=70,
+            height=1,
             command=self.copy_to_clipboard,
         )
 
     def copy_to_clipboard(self):
         pyperclip.copy(self.icd_nr)
+
+
+class SearchFunctionality():
+    def __init__(self, master, col, row):
+        self.brave_url = "https://search.brave.com/search?q="
+        self.google_url = "https://www.google.de/search?q="
+        self.radiopaedia_url ="https://radiopaedia.org/search?lang=gb&scope=articles&q="
+        self.width = 25
+
+        self.entry = tk.Entry(width=self.width)
+        self.entry.grid(column=col, row=row)
+
+        self.button = tk.Button(master=master, text="Radiopaedia Search", width=self.width, font=FONT, command=self.radiopaedia_search)
+        self.button.grid(column=col, row=row+1)
+        self.button = tk.Button(master=master, text="Brave Search", width=self.width, font=FONT, command=self.brave_search)
+        self.button.grid(column=col, row=row+2)
+        self.button = tk.Button(master=master, text="Google Search", width=self.width, font=FONT, command=self.google_search)
+        self.button.grid(column=col, row=row+3)
+
+    def assemble_search_string(self, url):
+        search_input = self.entry.get()
+        search_input = "+".join(search_input.split(" "))
+        search_url = f"{url}{search_input}"
+        self.entry.delete(0, tk.END)
+        return search_url
+
+    def brave_search(self):
+        search_url = self.assemble_search_string(url=self.brave_url)
+        webbrowser.open(url=search_url, new=0)
+
+    def google_search(self):
+        search_url = self.assemble_search_string(url=self.google_url)
+        webbrowser.open(url=search_url, new=0)
+
+    def radiopaedia_search(self):
+        search_url = self.assemble_search_string(url=self.radiopaedia_url)
+        webbrowser.open(url=search_url, new=0)
 
 
 def main():
@@ -68,8 +106,13 @@ def main():
             icd_10 = button_data[i][1]
             all_buttons.append(CopyButton(root, text=b_text, icd_nr=icd_10))
 
+        col = 0
+        row = 0
         for button in all_buttons:
-            button.pack()
+            button.grid(column=col, row=row)
+            row += 1
+
+    search = SearchFunctionality(master=root, col=1, row=0)
 
     root.mainloop()
 
