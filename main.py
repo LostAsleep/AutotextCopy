@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
+from functools import partial
 import pyperclip
 import webbrowser
 
@@ -52,21 +53,51 @@ class CopyButton(tk.Button):
 
 
 class SearchFunctionality():
+    """Internet and MyHelios search buttons and link to my radio notes file."""
+
     def __init__(self, master, col, row):
-        self.brave_url = "https://search.brave.com/search?q="
-        self.google_url = "https://www.google.de/search?q="
-        self.radiopaedia_url ="https://radiopaedia.org/search?lang=gb&scope=articles&q="
+        """Generate search UI parts upon initialization."""
+        self.search_providers = {
+            "Radiopaedia Search": "https://radiopaedia.org/search?lang=gb&scope=articles&q=",
+            "Brave Search": "https://search.brave.com/search?q=",
+            "Google Search": "https://www.google.de/search?q=",
+            "Kodierhilfe Search": "https://www.kodierhilfe.de/icd/icd-10-gm/suche;type=alphabet;code=final;term=",
+            "MyHelios Search": "https://myhelios.helios-gesundheit.de/suchergebnisse/?tx_heliossearch_search%5Bquery%5D=*",
+        }
+
         self.width = 25
+        self.current_row = row
+        self.entry = tk.Entry(width=self.width, font=FONT)
+        self.entry.grid(column=col, row=self.current_row)
+        self.current_row += 1
 
-        self.entry = tk.Entry(width=self.width)
-        self.entry.grid(column=col, row=row)
+        self.buttons = []
 
-        self.button = tk.Button(master=master, text="Radiopaedia Search", width=self.width, font=FONT, command=self.radiopaedia_search)
-        self.button.grid(column=col, row=row+1)
-        self.button = tk.Button(master=master, text="Brave Search", width=self.width, font=FONT, command=self.brave_search)
-        self.button.grid(column=col, row=row+2)
-        self.button = tk.Button(master=master, text="Google Search", width=self.width, font=FONT, command=self.google_search)
-        self.button.grid(column=col, row=row+3)
+        for key, value in self.search_providers.items():
+            # Needs partial because otherwise the function args
+            # will not be correctly updated during iteration.
+            button = tk.Button(master=master, text=key, width=self.width, font=FONT, command=partial(self.search_net, base_url=value))
+            button.grid(column=col, row=self.current_row)
+            self.current_row += 1
+
+        self.blank_label = tk.Label(text="", font=FONT)
+        self.blank_label.grid(column=col, row=self.current_row)
+        self.current_row += 1
+
+        self.notes_button = tk.Button(
+            master=master,
+            text="My Radio Notes",
+            width=self.width,
+            font=FONT,
+            command=partial(
+                webbrowser.open,
+                url="file:///G:/Radiologie/Radiologie-gesamt/09.%20Bilddaten-Ordner/Dissmann/08_notes/radiology-export.html",
+                new=0
+            )
+        )
+        self.notes_button.grid(column=col, row=self.current_row)
+        self.current_row += 1
+
 
     def assemble_search_string(self, url):
         search_input = self.entry.get()
@@ -75,16 +106,8 @@ class SearchFunctionality():
         self.entry.delete(0, tk.END)
         return search_url
 
-    def brave_search(self):
-        search_url = self.assemble_search_string(url=self.brave_url)
-        webbrowser.open(url=search_url, new=0)
-
-    def google_search(self):
-        search_url = self.assemble_search_string(url=self.google_url)
-        webbrowser.open(url=search_url, new=0)
-
-    def radiopaedia_search(self):
-        search_url = self.assemble_search_string(url=self.radiopaedia_url)
+    def search_net(self, base_url):
+        search_url = self.assemble_search_string(url=base_url)
         webbrowser.open(url=search_url, new=0)
 
 
@@ -92,6 +115,7 @@ def main():
     """The main function."""
     root = tk.Tk()
     root.title("Autotext Copy")
+    root.resizable(False, False)
 
     button_data = get_button_data()
     if button_data is None:
